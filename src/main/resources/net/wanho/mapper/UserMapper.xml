@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--命名空间与接口关联-->
+<mapper namespace="net.wanho.mapper.UserMapper">
+    <!--新增用户-->
+    <insert id="addUser" useGeneratedKeys="true" keyProperty="userId" >
+        INSERT INTO users(username,password,status,salt) VALUES (#{username},#{password},#{status},#{salt})
+    </insert>
+    <!--新增用户角色-->
+    <insert id="addRoleByUserId" >
+        INSERT INTO user_role(userId,roleId) VALUES
+        <if test="list != null and list.size>0">
+            <foreach collection="list" index="index" item="item" separator=",">
+                (#{userId},#{item})
+            </foreach>
+        </if>
+    </insert>
+
+    <!--新增user_role根据userId和roleId-->
+    <insert id="addUserRoleByUserId">
+        INSERT INTO user_role(userId,roleId) VALUES (#{userId},#{roleId})
+    </insert>
+    <!--根据用户id,status修改-->
+    <update id="updateUserByUserId">
+        UPDATE users SET status=#{status} where userId=#{userId}
+    </update>
+
+    <!--删除角色,用户原来的-->
+    <delete id="deleteRoleByUserId">
+        DELETE FROM user_role WHERE userId=#{userId}
+    </delete>
+
+
+    <!--删除用户 逻辑删-->
+    <delete id="deleteUserByUserId">
+        UPDATE users SET status=2  WHERE userId=#{userId}
+    </delete>
+
+
+
+    <!--分页查询用户-->
+    <select id="selectAllUsersByPage" resultType="net.wanho.pojo.User">
+        SELECT * FROM users
+    </select>
+    <!--查询全部角色-->
+    <select id="selectAllRoles" resultType="net.wanho.pojo.Role">
+        SELECT * FROM roles
+    </select>
+
+
+
+    <!--根据姓名查找用户-->
+    <select id="selectUserByName" resultType="net.wanho.pojo.User">
+        SELECT * FROM users WHERE username=#{username}
+    </select>
+
+
+    <!--根据用户id查询他拥有的全部角色-->
+    <select id="selectRoleByUserId" resultType="net.wanho.pojo.Role">
+        select r.* from user_role ur left join roles r on ur.roleId=r.roleId where ur.userId=#{userId}
+    </select>
+
+    <!--根据用户id查询他的状态-->
+    <select id="selectUserByUserId" resultType="net.wanho.pojo.User">
+        SELECT * FROM users WHERE userId=#{userId}
+    </select>
+
+    <!--根据用户姓名查找全部权限-->
+    <select id="selectAllLimitsByUsername" resultType="net.wanho.pojo.Limit">
+        select l.* from users u
+            left join user_role ur on ur.userId=u.userId
+            left join roles r on r.roleId=ur.roleId
+            left join role_limit rl on rl.roleId=r.roleId
+            left join limits l on l.limitId=rl.limitId
+            where u.username=#{username}
+    </select>
+
+
+</mapper>

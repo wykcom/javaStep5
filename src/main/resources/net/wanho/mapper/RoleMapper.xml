@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--命名空间与接口关联-->
+<mapper namespace="net.wanho.mapper.RoleMapper">
+
+    <!--新增角色-->
+    <insert id="addRole" useGeneratedKeys="true" keyProperty="roleId">
+        INSERT INTO roles(rolename,status) VALUES (#{rolename},#{status})
+    </insert>
+
+    <!--根据角色名查找-->
+    <select id="getRoleName" resultType="net.wanho.pojo.Role">
+        SELECT * FROM roles WHERE rolename=#{roleName}
+    </select>
+
+    <!--根据角色id查询他的状态-->
+    <select id="selectRoleByRoleId" resultType="net.wanho.pojo.Role">
+        SELECT * FROM roles WHERE roleId=#{roleId}
+    </select>
+
+    <!--根据角色id查询user_role-->
+    <select id="selectUserRoleByRoleId" resultType="java.lang.Integer">
+        SELECT userId FROM user_role WHERE roleId=#{roleId}
+    </select>
+
+
+    <!--根据角色id,status修改-->
+    <update id="updateRoleByRoleId">
+        UPDATE roles SET status=#{status} where roleId=#{roleId}
+    </update>
+
+    <!--删除角色 逻辑删-->
+    <delete id="deleteRoleByRoleId">
+        UPDATE roles SET status=2  WHERE roleId=#{roleId}
+    </delete>
+
+    <!--删除角色  真删-->
+    <delete id="deleteRoleByRoleIdTrue">
+        DELETE FROM roles WHERE roleId=#{roleId}
+    </delete>
+</mapper>

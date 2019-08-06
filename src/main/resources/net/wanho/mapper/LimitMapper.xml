@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--命名空间与接口关联-->
+<mapper namespace="net.wanho.mapper.LimitMapper">
+    <!--新增权限与角色关系表-->
+    <insert id="addLimits">
+        INSERT INTO role_limit(roleId,limitId) VALUES
+        <if test="list != null and list.size>0">
+            <foreach collection="list" index="index" item="item" separator=",">
+                (#{roleId},#{item})
+            </foreach>
+        </if>
+    </insert>
+    <!--新增权限-->
+    <insert id="addLimitByLimitIdParentId">
+        INSERT INTO limits(limitname,parentId,limitgrade,url) VALUES (#{limitName},#{parentId},#{limitgrade},#{url})
+    </insert>
+    <!--修改角色权限-->
+    <update id="updateLimitByLimitId">
+        UPDATE limits SET limitname=#{limitname},url=#{url} where limitId=#{limitId}
+    </update>
+    <!--删除角色权限-->
+    <delete id="deleteLimitsByRoleId">
+        DELETE  FROM role_limit WHERE roleId=#{roleId}
+    </delete>
+    <!--删除权限-->
+    <delete id="deleteLimitsByLimitId">
+        DELETE FROM limits WHERE limitId=#{LimitId}
+    </delete>
+
+    <!--查询全部权限-->
+    <select id="selectAllLimits" resultType="net.wanho.pojo.Limit">
+        SELECT limitId,limitname,parentId,limitgrade,url FROM limits
+    </select>
+    <!--根据RoleId查询权限-->
+    <select id="selectLimitsByRoleId" resultType="java.lang.Integer">
+        select limitId from role_limit where roleId=#{roleId}
+    </select>
+    <!--根据父id查询权限表-->
+    <select id="selectAllLimitsByParentId" resultType="net.wanho.pojo.Limit">
+        SELECT * FROM limits WHERE parentId=#{parentId}
+    </select>
+    <!--根据limitId查询role_limit表-->
+    <select id="selectLimitsByLimitId" resultType="java.lang.Integer">
+        SELECT roleId FROM role_limit WHERE limitId=#{limitId}
+    </select>
+    <!--根据limitId查询limits表-->
+    <select id="selectLimit" resultType="net.wanho.pojo.Limit">
+        SELECT * FROM limits WHERE limitId=#{limitId}
+    </select>
+
+
+</mapper>
